@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SNSナッジ実験（タイマー）</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 2em;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 0.5em 1.5em;
+            font-size: 16px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 24px;
+        }
+
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            margin-top: 0.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>SNS投稿シミュレーション</h2>
+        <div class="topic">
+            <strong>話題：</strong><br>
+            有名人Aが不適切発言で炎上。「謝罪はしたが反省が感じられない」と批判が続出しています。
+        </div>
+        <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea><br>
+        <button id="submitBtn">投稿する</button>
+    </div>
+
+    <div class="overlay" id="cooldownOverlay">
+        <p>投稿を送信する前に、少しだけ考える時間を取りましょう。</p>
+        <div class="countdown" id="countdownNumber">5</div>
+    </div>
+
+    <script>
+        let interval;
+        function startCooldown() {
+            const content = document.getElementById("post").value.trim();
+            if (content.length === 0) {
+                alert("投稿内容が空です");
+                return;
+            }
+
+            document.getElementById("cooldownOverlay").style.display = "flex";
+            let timeLeft = 5;
+            const countdownEl = document.getElementById("countdownNumber");
+
+            interval = setInterval(() => {
+                timeLeft--;
+                countdownEl.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    document.getElementById("cooldownOverlay").style.display = "none";
+                    alert("投稿が送信されました（保存はされません）");
+                }
+            }, 1000);
+        }
+
+        // ← ページ読み込み後にイベントをバインド
+        window.onload = function () {
+            document.getElementById("submitBtn").addEventListener("click", startCooldown);
+        };
+    </script>
+
+</body>
+
+</html>
