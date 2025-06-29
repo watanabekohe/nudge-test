@@ -37,29 +37,35 @@
             justify-content: space-between;
         }
 
+        .post-wrapper {
+            position: relative;
+            margin-top: 1em;
+        }
+
         textarea {
             width: 100%;
             height: 120px;
             font-size: 16px;
-            margin-top: 1em;
             padding: 0.5em;
             box-sizing: border-box;
-            flex-grow: 1;
         }
 
         .nudge-image {
             position: absolute;
-             top: 220px;
-            /* 位置は調整可能 */
-            right: 100px;
+            top: -40px;
+            right: 8px;
             opacity: 0.8;
+            width: 50px;
+            height: 30px;
         }
 
         .nudge-image img {
-            width: 40px;
-            height: auto;
+            width: 100%;
+            height: 100%;
             animation: pulse 2s infinite;
+            object-fit: contain;
         }
+
 
         @keyframes pulse {
             0% {
@@ -103,27 +109,27 @@
             あなたはこの件についてSNSで意見を投稿しようとしています。
         </div>
 
-        <!-- カメラの画像 -->
-        <div class="nudge-image">
-            <img src="camera.png" alt="カメラのイメージ">
-        </div>
 
         <label for="post">あなたの投稿内容：</label><br>
-        <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea><br>
-        <button onclick="submitPost()">投稿する</button>
-    </div>
+        <div class="post-wrapper">
+            <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea>
+            <div class="nudge-image">
+                <img src="camera.png" alt="カメラのイメージ">
+            </div>
+            <button onclick="submitPost()">投稿する</button>
+        </div>
 
 
-    <script>
-        function submitPost() {
-            const content = document.getElementById("post").value.trim();
-            if (content.length === 0) {
-                alert("投稿内容が空です");
-                return;
+        <script>
+            function submitPost() {
+                const content = document.getElementById("post").value.trim();
+                if (content.length === 0) {
+                    alert("投稿内容が空です");
+                    return;
+                }
+                alert("投稿が送信されました（保存はされません）");
             }
-            alert("投稿が送信されました（保存はされません）");
-        }
-    </script>
+        </script>
 </body>
 
 </html>
