@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ✅ 追加 -->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SNSナッジ実験（話題あり）</title>
     <style>
         body {
@@ -21,6 +20,8 @@
             padding: 1.5em;
             border-radius: 8px;
             box-shadow: 0 0 8px #ccc;
+            position: relative;
+            /* 基準にする */
         }
 
         .topic {
@@ -30,17 +31,34 @@
             border-left: 5px solid #77c;
         }
 
+        .post-area {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-size: 16px;
+            margin-top: 1em;
+            padding: 0.5em;
+            box-sizing: border-box;
+            flex-grow: 1;
+        }
+
         .nudge-image {
-            text-align: center;
-            margin-bottom: 1em;
+            position: absolute;
+            top: 220px;
+            /* 位置は調整可能 */
+            right: 20px;
+            opacity: 0.8;
         }
 
         .nudge-image img {
-            max-width: 80px;
-            width: 30%;
+            width: 40px;
             height: auto;
             animation: pulse 2s infinite;
-            opacity: 0.9;
         }
 
         @keyframes pulse {
@@ -55,15 +73,7 @@
             100% {
                 transform: scale(1);
             }
-        }
 
-        textarea {
-            width: 100%;
-            height: 120px;
-            font-size: 16px;
-            margin-top: 1em;
-            padding: 0.5em;
-            box-sizing: border-box;
         }
 
         button {
@@ -93,15 +103,16 @@
             あなたはこの件についてSNSで意見を投稿しようとしています。
         </div>
 
-        <div class="nudge-image" id="nudgeArea">
+        <!-- 目の画像 -->
+        <div class="nudge-image">
             <img src="eye2.png" alt="目のイメージ">
-            <p>誰かがあなたの投稿を見ているかもしれません</p>
         </div>
 
         <label for="post">あなたの投稿内容：</label><br>
         <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea><br>
         <button onclick="submitPost()">投稿する</button>
     </div>
+
 
     <script>
         function submitPost() {
