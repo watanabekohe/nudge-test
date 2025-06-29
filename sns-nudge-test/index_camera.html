@@ -107,6 +107,7 @@
         function startCamera() {
             const video = document.getElementById("video");
             const cameraFeed = document.getElementById("cameraFeed");
+             if (video.srcObject) return; // すでに起動済みなら再起動しない
 
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({ video: true })
