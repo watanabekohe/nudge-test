@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNSナッジ実験（話題あり）</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 1em;
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 1.5em;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #ccc;
+            position: relative;
+            /* 基準にする */
+        }
+
+        .topic {
+            background: #eef;
+            padding: 1em;
+            margin-bottom: 1.5em;
+            border-left: 5px solid #77c;
+        }
+
+        .post-area {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .post-wrapper {
+            position: relative;
+            margin-top: 1em;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-size: 16px;
+            padding: 0.5em;
+            box-sizing: border-box;
+        }
+
+        .nudge-image {
+            position: absolute;
+            top: -40px;
+            right: 8px;
+            opacity: 0.8;
+            width: 50px;
+            height: 30px;
+        }
+
+        .nudge-image img {
+            width: 100%;
+            height: 100%;
+            animation: pulse 2s infinite;
+            object-fit: contain;
+        }
+
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 0.7em 1.5em;
+            font-size: 16px;
+            width: 100%;
+            background-color: #77c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #6699cc;
+        }
+
+        /* 👁 全画面の目 */
+        .fullscreen-eye {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            z-index: 9999;
+            pointer-events: none;
+            animation: eyeFlash 2s ease-in-out;
+        }
+
+        .fullscreen-eye img {
+            width: 40vw;
+            max-width: 500px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        @keyframes eyeFlash {
+            0% {
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>SNS投稿シミュレーション</h2>
+
+        <div class="topic" id="topic">
+            <strong>話題：</strong><br>
+            有名人Aが不適切発言で炎上。「謝罪はしたが反省が感じられない」と批判が続出しています。
+            あなたはこの件についてSNSで意見を投稿しようとしています。
+        </div>
+
+        <!-- 目の画像 -->
+
+
+        <label for="post">あなたの投稿内容：</label><br>
+        <div class="post-wrapper">
+            <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea>
+         
+            <button onclick="submitPost()">投稿する</button>
+        </div>
+        <!-- 👁 巨大な目ナッジ -->
+        <div class="fullscreen-eye" id="fullscreenEye">
+            <img src="eye2.png" alt="監視の目">
+        </div>
+
+
+        <script>
+            function submitPost() {
+                const content = document.getElementById("post").value.trim();
+                if (content.length === 0) {
+                    alert("投稿内容が空です");
+                    return;
+                }
+                alert("投稿が送信されました（保存はされません）");
+            }
+            // 👁 ページ読み込み時に巨大な目を表示
+            window.addEventListener("DOMContentLoaded", () => {
+                const eye = document.getElementById("fullscreenEye");
+                eye.style.opacity = "1";
+                setTimeout(() => {
+                    eye.remove(); // 2秒後に削除
+                }, 2000);
+            });
+
+        </script>
+
+</body>
+
+</html>
