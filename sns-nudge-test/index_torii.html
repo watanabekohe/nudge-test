@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SNSナッジ実験（鳥居背景常時表示）</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ⛩ 鳥居背景：常時表示 */
+        .torii-bg {
+            position: fixed;
+            inset: 0;
+            background: url('torii2.jpg') center/cover no-repeat;
+            z-index: 0;
+            opacity: 0.6;
+            pointer-events: none;
+            filter: brightness(90%) saturate(80%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 1em auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5em;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #ccc;
+        }
+
+        .topic {
+            background: #eef;
+            padding: 1em;
+            margin-bottom: 1.5em;
+            border-left: 5px solid #77c;
+        }
+
+        .post-wrapper {
+            margin-top: 1em;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-size: 16px;
+            padding: 0.5em;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 0.7em 1.5em;
+            font-size: 16px;
+            width: 100%;
+            background-color: #77c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #6699cc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ⛩ 鳥居背景（常時表示） -->
+    <div class="torii-bg"></div>
+
+    <div class="container">
+        <h2>SNS投稿シミュレーション</h2>
+
+        <div class="topic">
+            <strong>話題：</strong><br />
+            有名人Aが不適切発言で炎上。「謝罪はしたが反省が感じられない」と批判が続出しています。<br />
+            あなたはこの件についてSNSで意見を投稿しようとしています。
+        </div>
+
+        <label for="post">あなたの投稿内容：</label>
+        <div class="post-wrapper">
+            <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea>
+            <button onclick="submitPost()">投稿する</button>
+        </div>
+    </div>
+
+    <script>
+        function submitPost() {
+            const content = document.getElementById("post").value.trim();
+            if (!content) {
+                alert("投稿内容が空です");
+                return;
+            }
+            alert("投稿が送信されました（保存はされません）");
+        }
+    </script>
+</body>
+
+</html>
