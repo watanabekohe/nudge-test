@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNSナッジ実験（話題あり）</title>
+    <title>SNSナッジ実験（影サイズ統一）</title>
     <style>
         body {
             font-family: sans-serif;
@@ -41,6 +41,8 @@
             font-size: 16px;
             padding: 0.5em;
             box-sizing: border-box;
+            position: relative;
+            z-index: 2;
         }
 
         button {
@@ -58,44 +60,46 @@
             background-color: #6699cc;
         }
 
-        /* 👤 後ろ姿ナッジ */
+        /* 👤 背中ナッジ（サイズを人影と揃える） */
         .back-figure-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            z-index: 3;
             pointer-events: none;
+            opacity: 0;
             animation: showBackFigure 2.5s ease-in-out forwards;
         }
 
         .back-figure-overlay img {
-            width: 140px;
-            height: auto;
-            opacity: 0.6;
-            filter: blur(1px);
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            opacity: 0.1;
+            filter: blur(2px);
         }
 
         @keyframes showBackFigure {
             0% {
                 opacity: 0;
-                transform: translate(-50%, -60%);
+                transform: translateY(-10px);
             }
 
             40% {
                 opacity: 1;
-                transform: translate(-50%, -50%);
+                transform: translateY(0);
             }
 
             80% {
                 opacity: 1;
-                transform: translate(-50%, -50%);
+                transform: translateY(0);
             }
 
             100% {
                 opacity: 0;
-                transform: translate(-50%, -40%);
+                transform: translateY(10px);
             }
         }
     </style>
@@ -114,7 +118,7 @@
         <label for="post">あなたの投稿内容：</label><br>
 
         <div class="post-wrapper">
-            <!-- 👤 背中の人物ナッジ -->
+            <!-- 👤 ナッジ：投稿欄と同じサイズで出現 -->
             <div class="back-figure-overlay" id="backFigure">
                 <img src="man2.png" alt="人の後ろ姿">
             </div>
@@ -134,7 +138,7 @@
             alert("投稿が送信されました（保存はされません）");
         }
 
-        // ナッジを一定時間後に削除
+        // ナッジを2.6秒後に自動削除
         window.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 document.getElementById("backFigure")?.remove();
