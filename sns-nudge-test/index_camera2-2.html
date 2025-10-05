@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNSナッジ実験（RECナッジ・外枠右上）</title>
+    <title>SNSナッジ実験（RECナッジ改良版）</title>
     <style>
         body {
             font-family: sans-serif;
@@ -29,10 +29,9 @@
             border-left: 5px solid #77c;
         }
 
-        .post-area {
+        .post-wrapper {
+            margin-top: 1em;
             position: relative;
-            /* ← カメラの位置基準 */
-            margin-top: 1.5em;
         }
 
         textarea {
@@ -58,21 +57,37 @@
             background-color: #6699cc;
         }
 
-        /* 📷 カメラナッジ（投稿欄の右上・外） */
-        .camera-nudge {
+        /* 🔴 REC ナッジ（投稿欄の右上に固定） */
+        .rec-indicator {
             position: absolute;
-            top: -50px;
-            right: 0;
-            width: 80px;
-            z-index: 10;
+            top: -20px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #d00;
+            font-weight: bold;
         }
 
-        .camera-nudge img {
-            width: 100%;
-            height: auto;
-            border: 2px solid #ccc;
-            filter: grayscale(100%) contrast(1.2);
-            border-radius: 4px;
+        .rec-circle {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
         }
     </style>
 </head>
@@ -81,17 +96,18 @@
     <div class="container">
         <h2>SNS投稿シミュレーション</h2>
 
-        <div class="topic">
-            <strong>話題：</strong><br />
-            有名人Aが不適切発言で炎上。「謝罪はしたが反省が感じられない」と批判が続出しています。<br />
+        <div class="topic" id="topic">
+            <strong>話題：</strong><br>
+            有名人Aが不適切発言で炎上。「謝罪はしたが反省が感じられない」と批判が続出しています。
             あなたはこの件についてSNSで意見を投稿しようとしています。
         </div>
 
-        <label for="post">あなたの投稿内容：</label>
-        <div class="post-area">
-            <!-- 📷 外枠右上に監視カメラ -->
-            <div class="camera-nudge">
-                <img src="camera2.png" alt="監視カメラ映像">
+        <label for="post">あなたの投稿内容：</label><br>
+        <div class="post-wrapper">
+            <!-- 🔴 RECマーク -->
+            <div class="rec-indicator">
+                <div class="rec-circle"></div>
+                REC中...
             </div>
 
             <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea>
