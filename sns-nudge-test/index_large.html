@@ -153,12 +153,12 @@
         <label for="post">あなたの投稿内容：</label><br>
         <div class="post-wrapper">
             <textarea id="post" placeholder="ここに投稿内容を入力してください"></textarea>
-         
+
             <button onclick="submitPost()">投稿する</button>
         </div>
         <!-- 👁 巨大な目ナッジ -->
         <div class="fullscreen-eye" id="fullscreenEye">
-            <img src="eye4.png" alt="監視の目">
+            <img src="eye8.png" alt="監視の目">
         </div>
 
 
@@ -175,9 +175,11 @@
             window.addEventListener("DOMContentLoaded", () => {
                 const eye = document.getElementById("fullscreenEye");
                 eye.style.opacity = "1";
-                setTimeout(() => {
-                    eye.remove(); // 2秒後に削除
-                }, 2000);
+                // アニメーションが終わったら削除
+                eye.addEventListener("animationend", () => {
+                    eye.remove();
+                });
+
             });
 
         </script>
