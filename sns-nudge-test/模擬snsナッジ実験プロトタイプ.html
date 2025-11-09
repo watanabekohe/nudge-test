@@ -441,20 +441,20 @@
     sendBtn.addEventListener('click', async () => {
       log.submitAt = Date.now();
       log.lenAtSubmit = ta.value.length;
-      // ← 共有鍵はGAS側TOKENと一致させる
-      const payload = { ...log, text: ta.value, token: 'CHANGE_ME_SECRET' };
 
-      // デバッグ表示（画面にも出す）
+      // GAS側TOKENと一致させる
+      const payload = { ...log, text: ta.value, token: 'NUDGE_2025_SECRET' };
+
+      // 画面のデバッグ表示（任意）
       debugOut.textContent = JSON.stringify(payload, null, 2);
-      console.log('POST payload', payload);
 
-      // ★ Webhook（GASのウェブアプリURL）にPOST
-      const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxpSAOe4WvOj5KtUimJ-zVuyFn4CNz8266DwrO5SMtTdRgLhyklsUlHt5VIy87OPXJ4SQ/exec';
+      // ★ あなたのデプロイURL
+      const WEBHOOK_URL = 'https://script.google.com/a/macros/s.iwate-pu.ac.jp/s/AKfycbxpSAOe4WvOj5KtUimJ-zVuyFn4CNz8266DwrO5SMtTdRgLhyklsUlHt5VIy87OPXJ4SQ/exec';
 
       try {
         await fetch(WEBHOOK_URL, {
           method: 'POST',
-          mode: 'no-cors',                         // CORSを避ける（レスポンスは読めない）
+          mode: 'no-cors',                         // CORS回避（応答は読まない）
           headers: { 'Content-Type': 'text/plain' }, // preflight回避
           body: JSON.stringify(payload)
         });
@@ -462,9 +462,9 @@
         console.error('POST failed', e);
       }
 
-      // 送信完了画面へ
       go('complete');
     });
+
 
     // トピック（実験用の簡易ダミー）
     document.getElementById('topic').innerHTML = `
