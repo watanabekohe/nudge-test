@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>模擬SNSナッジ実験プロトタイプ</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --primary: #111827;
+      --accent: #e53935;
+      /* REC 赤 */
+      --ring: #4b5563;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eef0f3;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .body {
+      padding: 20px;
+    }
+
+    .row {
+      margin-bottom: 16px;
+    }
+
+    .topic {
+      background: #f0f7ff;
+      border: 1px solid #dbeafe;
+      color: #1e40af;
+      padding: 14px;
+      border-radius: 12px;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-top: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 14px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.primary {
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
+    }
+
+    button[disabled] {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* 👁️ 目アイコン（投稿欄右上の外枠） */
+    .eye-icon {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      font-size: 22px;
+      opacity: 0.85;
+      animation: blink 3s infinite;
+      user-select: none;
+    }
+
+    @keyframes blink {
+
+      0%,
+      90%,
+      100% {
+        transform: scale(1);
+        opacity: 0.85
+      }
+
+      95% {
+        transform: scale(0.92);
+        opacity: 0.35
+      }
+    }
+
+    /* 🔴 REC 表示（確認画面右上） */
+    .rec {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .5px;
+      animation: recblink 1s infinite;
+    }
+
+    @keyframes recblink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    /* 🪞 鏡プレビュー（軽い鏡面表現。今回はREC条件でも使えるように控えめ） */
+    .mirror {
+      background: linear-gradient(180deg, #fff, #eef2f7);
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 16px;
+      filter: brightness(.98);
+    }
+
+    .mirror .user {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .mirror .text {
+      font-style: italic;
+      color: #1f2937;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ⏳ クールダウンリング */
+    .cooldown {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ring {
+      width: 20px;
+      height: 20px;
+      border: 3px solid #cbd5e1;
+      border-top-color: var(--ring);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .footer {
+      padding: 16px 20px;
+      border-top: 1px solid #eef0f3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ページ切替のためのセクション */
+    .screen {
+      display: none;
+      position: relative;
+    }
+
+    .screen.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div class="title">模擬SNSナッジ実験</div>
+        <div class="sub" id="condLabel">条件: —</div>
+      </div>
+
+      <div class="body">
+        <!-- 投稿画面（compose） -->
+        <section id="screen-compose" class="screen active">
+          <div class="row topic" id="topic">
+            <strong>課題:</strong> 次の記事への返信コメントを記入してください。内容は自由ですが、公開はされません。
+          </div>
+          <div class="row input-wrap" id="composeWrap">
+            <!-- 👁️ 目アイコンは条件によって挿入 -->
+            <textarea id="ta" placeholder="ここにコメントを入力"></textarea>
+          </div>
+          <div class="toolbar">
+            <div class="muted" id="charCount">0 文字</div>
+            <div class="actions">
+              <button id="nextBtn" class="primary">次へ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 確認画面（confirm） -->
+        <section id="screen-confirm" class="screen">
+          <div class="rec" id="recBadge">● REC</div>
+          <div class="row mirror">
+            <div class="user" id="userName">あなた（@participant）</div>
+            <div class="text" id="mirrorText"></div>
+          </div>
+          <div class="row">
+            <div class="muted" id="cooldownArea" style="display:none;">
+              <span class="cooldown"><span class="ring"></span>送信準備中…</span>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div class="muted">プレビューを確認して、必要なら修正してください。</div>
+            <div class="actions">
+              <button id="backBtn">戻る</button>
+              <button id="sendBtn" class="primary" disabled>送信</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 完了画面（complete） -->
+        <section id="screen-complete" class="screen">
+          <div class="row">
+            <h3>送信が完了しました。</h3>
+            <p class="muted">ご協力ありがとうございました。続けて事後アンケートにお答えください（別フォーム）。</p>
+            <p><a id="surveyLink" href="#" target="_blank">事後アンケートを開く</a></p>
+            <pre id="debugOut"
+              style="white-space:pre-wrap; background:#0b1220; color:#cbd5e1; padding:12px; border-radius:10px; font-size:12px; overflow:auto;"></pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer">
+        <div class="notice">🔒 本実験のデータは学術目的で匿名保存されます。</div>
+        <div class="muted" id="pid">—</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== 条件パラメータ ======
+    // cond=CTRL | EYE | REC | REC_MIRROR
+    const params = new URLSearchParams(location.search);
+    const COND = (params.get('cond') || 'CTRL').toUpperCase();
+    const SURVEY_URL = params.get('survey') || '#';
+
+    // ====== 参加者ID ======
+    const pid = (() => {
+      const k = 'exp_pid';
+      let v = sessionStorage.getItem(k);
+      if (!v) { v = 'p' + Math.random().toString(36).slice(2, 10); sessionStorage.setItem(k, v); }
+      return v;
+    })();
+
+    // ====== ログオブジェクト ======
+    const log = {
+      pid,
+      cond: COND,
+      ua: navigator.userAgent,
+      openAt: Date.now(),
+      typeStart: null,
+      previewOpen: null,
+      submitAt: null,
+      canceled: false,
+      backspaceCount: 0,
+      delCount: 0,
+      pasteCount: 0,
+      deltaChars: 0,
+      lenAtSubmit: 0,
+    };
+
+    // ====== 要素参照 ======
+    const screenCompose = document.getElementById('screen-compose');
+    const screenConfirm = document.getElementById('screen-confirm');
+    const screenComplete = document.getElementById('screen-complete');
+    const condLabel = document.getElementById('condLabel');
+    const composeWrap = document.getElementById('composeWrap');
+    const ta = document.getElementById('ta');
+    const charCount = document.getElementById('charCount');
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const recBadge = document.getElementById('recBadge');
+    const mirrorText = document.getElementById('mirrorText');
+    const userName = document.getElementById('userName');
+    const cooldownArea = document.getElementById('cooldownArea');
+    const pidFoot = document.getElementById('pid');
+    const debugOut = document.getElementById('debugOut');
+    const surveyLink = document.getElementById('surveyLink');
+
+    // ラベル表示
+    condLabel.textContent = `条件: ${COND}`;
+    pidFoot.textContent = `ID: ${pid}`;
+    surveyLink.href = SURVEY_URL;
+
+    // 👁️ 目アイコン（EYE条件で追加）
+    if (COND === 'EYE' || COND === 'REC_EYE' || COND === 'BOTH') {
+      const eye = document.createElement('div');
+      eye.className = 'eye-icon';
+      eye.textContent = '👁️';
+      composeWrap.appendChild(eye);
+    }
+
+    // 入力監視（ログ）
+    let prevLen = 0;
+    ta.addEventListener('input', () => {
+      const len = ta.value.length;
+      charCount.textContent = `${len} 文字`;
+      if (log.typeStart === null && len > 0) log.typeStart = Date.now();
+      const d = len - prevLen;
+      log.deltaChars += d;
+      prevLen = len;
+    });
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace') log.backspaceCount++;
+      if (e.key === 'Delete') log.delCount++;
+      if (e.ctrlKey && e.key.toLowerCase() === 'v') log.pasteCount++;
+    });
+
+    // 画面遷移
+    const go = (name) => {
+      for (const el of [screenCompose, screenConfirm, screenComplete]) el.classList.remove('active');
+      if (name === 'compose') screenCompose.classList.add('active');
+      if (name === 'confirm') screenConfirm.classList.add('active');
+      if (name === 'complete') screenComplete.classList.add('active');
+    };
+
+    // 次へ（確認画面）
+    nextBtn.addEventListener('click', () => {
+      mirrorText.textContent = ta.value.trim();
+      if (!mirrorText.textContent) { ta.focus(); return; }
+
+      // RECバッジ表示（REC系条件のみ）
+      const showREC = (COND === 'REC' || COND === 'REC_MIRROR');
+      recBadge.style.display = showREC ? 'block' : 'none';
+
+      // 鏡UI：今回は常に使用可（視覚的プレビュー）だが、RECのみの条件では淡色化したい場合はここで調整可能
+      // （必要なら cond に応じて .mirror のスタイルを変更）
+
+      go('confirm');
+      log.previewOpen = Date.now();
+
+      // クールダウン（送信ボタン無効 → 1.5秒後に有効）
+      cooldownArea.style.display = 'inline-block';
+      sendBtn.disabled = true;
+      setTimeout(() => { sendBtn.disabled = false; cooldownArea.style.display = 'none'; }, 1500);
+    });
+
+    // 戻る
+    backBtn.addEventListener('click', () => {
+      go('compose');
+      log.canceled = true; // 戻って修正した事実を記録
+      ta.focus();
+    });
+
+    // 送信
+    sendBtn.addEventListener('click', async () => {
+      log.submitAt = Date.now();
+      log.lenAtSubmit = ta.value.length;
+
+      // GAS側TOKENと一致させる
+      const payload = { ...log, text: ta.value, token: 'NUDGE_2025_SECRET' };
+
+      // 画面のデバッグ表示（任意）
+      debugOut.textContent = JSON.stringify(payload, null, 2);
+
+      // ★ あなたのデプロイURL
+      const WEBHOOK_URL = 'https://script.google.com/a/macros/s.iwate-pu.ac.jp/s/AKfycbxpSAOe4WvOj5KtUimJ-zVuyFn4CNz8266DwrO5SMtTdRgLhyklsUlHt5VIy87OPXJ4SQ/exec';
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors',                         // CORS回避（応答は読まない）
+          headers: { 'Content-Type': 'text/plain' }, // preflight回避
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.error('POST failed', e);
+      }
+
+      go('complete');
+    });
+
+
+    // トピック（実験用の簡易ダミー）
+    document.getElementById('topic').innerHTML = `
+      <strong>課題:</strong> 以下の記事に対して、あなたの意見をコメントしてください。<br/>
+      <em>例: 学内の施設利用ルールが変更され、一部の学生から不満の声が出ているというニュース。</em>
+    `;
+  </script>
+</body>
+
+</html>
