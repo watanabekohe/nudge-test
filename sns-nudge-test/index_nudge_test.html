@@ -161,28 +161,38 @@
       }
     }
 
-    /* 🔴 REC 表示（確認画面右上） */
+    /* 送信直前のRECバッジ */
     .rec {
       position: absolute;
-      top: 8px;
+      top: 10px;
       right: 12px;
-      color: var(--accent);
+      color: #E53935;
       font-weight: 800;
       letter-spacing: .5px;
-      animation: recblink 1s infinite;
+      z-index: 10;
+      /* 前面へ */
+      animation: recpulse 1s linear infinite;
     }
 
-    @keyframes recblink {
+    @keyframes recpulse {
 
       0%,
       100% {
-        opacity: 1
+        opacity: 1;
+        transform: scale(1);
       }
 
       50% {
-        opacity: .3
+        opacity: .25;
+        transform: scale(.96);
       }
     }
+
+    /* 確認画面のルートは relative 推奨（絶対配置の基準） */
+    #screen-confirm {
+      position: relative;
+    }
+
 
     /* 🪞 鏡プレビュー（軽い鏡面表現。今回はREC条件でも使えるように控えめ） */
     .mirror {
@@ -323,7 +333,7 @@
 
   <script>
     // ====== 条件パラメータ ======
-    // cond=CTRL | EYE | REC | REC_MIRROR
+    // cond=CTRL | EYE | REC | EYE_REC
     const params = new URLSearchParams(location.search);
     const COND = (params.get('cond') || 'CTRL').toUpperCase();
     const SURVEY_URL = params.get('survey') || '#';
@@ -366,7 +376,6 @@
     const sendBtn = document.getElementById('sendBtn');
     const recBadge = document.getElementById('recBadge');
     const mirrorText = document.getElementById('mirrorText');
-    const userName = document.getElementById('userName');
     const cooldownArea = document.getElementById('cooldownArea');
     const pidFoot = document.getElementById('pid');
     const debugOut = document.getElementById('debugOut');
@@ -377,8 +386,8 @@
     pidFoot.textContent = `ID: ${pid}`;
     surveyLink.href = SURVEY_URL;
 
-    // 👁️ 目アイコン（EYE条件で追加）
-    if (COND === 'EYE' || COND === 'REC_EYE' || COND === 'BOTH') {
+    // 👁️ 目アイコン（EYE条件またはEYE_REC条件で追加）
+    if (COND === 'EYE' || COND === 'EYE_REC') {
       const eye = document.createElement('div');
       eye.className = 'eye-icon';
       eye.textContent = '👁️';
@@ -414,17 +423,14 @@
       mirrorText.textContent = ta.value.trim();
       if (!mirrorText.textContent) { ta.focus(); return; }
 
-      // RECバッジ表示（REC系条件のみ）
-      const showREC = (COND === 'REC' || COND === 'REC_MIRROR');
+      // RECバッジ表示（RECまたはEYE_REC条件で表示）
+      const showREC = (COND === 'REC' || COND === 'EYE_REC');
       recBadge.style.display = showREC ? 'block' : 'none';
-
-      // 鏡UI：今回は常に使用可（視覚的プレビュー）だが、RECのみの条件では淡色化したい場合はここで調整可能
-      // （必要なら cond に応じて .mirror のスタイルを変更）
 
       go('confirm');
       log.previewOpen = Date.now();
 
-      // クールダウン（送信ボタン無効 → 1.5秒後に有効）
+      // クールダウン
       cooldownArea.style.display = 'inline-block';
       sendBtn.disabled = true;
       setTimeout(() => { sendBtn.disabled = false; cooldownArea.style.display = 'none'; }, 1500);
@@ -433,7 +439,7 @@
     // 戻る
     backBtn.addEventListener('click', () => {
       go('compose');
-      log.canceled = true; // 戻って修正した事実を記録
+      log.canceled = true;
       ta.focus();
     });
 
