@@ -78,6 +78,7 @@
     .input-wrap {
       position: relative;
       margin-top: 12px;
+      padding-top: 24px;
     }
 
     textarea {
@@ -135,15 +136,20 @@
       cursor: not-allowed;
     }
 
-    /* 👁️ 目アイコン（投稿欄右上の外枠） */
+
+    /* 👁️ 目アイコン（コメント欄 左上） */
     .eye-icon {
       position: absolute;
-      top: -12px;
-      right: -12px;
-      font-size: 22px;
+      top: 4px;
+      /* フィールドの上部の「帯」に載せる */
+      left: 10px;
+      right: auto;
+      font-size: 18px;
       opacity: 0.85;
       animation: blink 3s infinite;
       user-select: none;
+      pointer-events: none;
+      /* クリックの邪魔をしないように */
     }
 
     @keyframes blink {
@@ -161,18 +167,23 @@
       }
     }
 
-    /* 送信直前のRECバッジ */
+    /* RECバッジ（コメント欄 左上：EYE の右横あたり） */
     .rec {
       position: absolute;
-      top: 10px;
-      right: 12px;
+      top: 6px;
+      left: 40px;
+      /* 目の右に少しスペースを空けて表示 */
+      right: auto;
       color: #E53935;
       font-weight: 800;
       letter-spacing: .5px;
       z-index: 10;
-      /* 前面へ */
       animation: recpulse 1s linear infinite;
+      pointer-events: none;
+      font-size: 14px;
+      transform: scale(1.2);
     }
+
 
     @keyframes recpulse {
 
@@ -276,12 +287,33 @@
       <div class="body">
         <!-- 投稿画面（compose） -->
         <section id="screen-compose" class="screen active">
+          <!-- 投稿内容（課題） -->
           <div class="row topic" id="topic">
-            <strong>課題:</strong> 次の記事への返信コメントを記入してください。内容は自由ですが、公開はされません。
+            <strong>投稿（架空ユーザー）</strong><br />
+            <p><strong>投稿者：</strong>@morioka_city_life<br />
+              <em>アイコン：</em>風景写真（匿名感）
+            </p>
+            <blockquote style="margin:8px 0; padding:8px 12px; background:#f9fafb; border-left:4px solid #3b82f6;">
+              今日も大学の前で吸ってる人いたけど、別に外なんだから良くない？<br />
+              全面禁煙とか厳しすぎると思うんだけど。<br />
+              ちょっと吸ったくらいで誰も困らないでしょ。
+            </blockquote>
+
+            <p><strong>先行返信コメント（攻撃的な例）</strong></p>
+            <div style="margin-left:1em;">
+              <p><strong>返信１：</strong>@xx_user01<br />
+                外で吸うのは勝手だろ。文句言ってる奴が神経質すぎるわ。</p>
+
+              <p><strong>返信２（より強い攻撃）：</strong><br />
+                禁煙厨ほんと面倒くさい。自分の意見を押しつけるなっての。</p>
+            </div>
           </div>
+
           <div class="row input-wrap" id="composeWrap">
             <!-- 👁️ 目アイコンは条件によって挿入 -->
-            <textarea id="ta" placeholder="ここにコメントを入力"></textarea>
+            <div class="rec" id="recBadge">● REC</div>
+
+            <textarea id="ta" placeholder="   ここにコメントを入力"></textarea>
           </div>
           <div class="toolbar">
             <div class="muted" id="charCount">0 文字</div>
@@ -293,7 +325,6 @@
 
         <!-- 確認画面（confirm） -->
         <section id="screen-confirm" class="screen">
-          <div class="rec" id="recBadge">● REC</div>
           <div class="row mirror">
             <div class="user" id="userName">あなた（@participant）</div>
             <div class="text" id="mirrorText"></div>
@@ -333,7 +364,6 @@
 
   <script>
     // ====== 条件パラメータ ======
-    // cond=CTRL | EYE | REC | EYE_REC
     const params = new URLSearchParams(location.search);
     const COND = (params.get('cond') || 'CTRL').toUpperCase();
     const SURVEY_URL = params.get('survey') || '#';
@@ -346,7 +376,7 @@
       return v;
     })();
 
-    // ====== ログオブジェクト ======
+    // ====== ログ ======
     const log = {
       pid,
       cond: COND,
@@ -381,103 +411,129 @@
     const debugOut = document.getElementById('debugOut');
     const surveyLink = document.getElementById('surveyLink');
 
-    // ラベル表示
     condLabel.textContent = `条件: ${COND}`;
     pidFoot.textContent = `ID: ${pid}`;
     surveyLink.href = SURVEY_URL;
 
-    // 👁️ 目アイコン（EYE条件またはEYE_REC条件で追加）
+    // ============================
+    // 👁️ EYE & 🔴 REC 表示制御
+    // ============================
+
+    // 👁️ 目アイコン
+    let eyeIcon = null;
+    let eyeShown = false;
     if (COND === 'EYE' || COND === 'EYE_REC') {
-      const eye = document.createElement('div');
-      eye.className = 'eye-icon';
-      eye.textContent = '👁️';
-      composeWrap.appendChild(eye);
+      eyeIcon = document.createElement('div');
+      eyeIcon.className = 'eye-icon';
+      eyeIcon.textContent = '👁️';
     }
 
-    // 入力監視（ログ）
+    // RECマーク（初期非表示）
+    recBadge.style.display = 'none';
+    let recShown = false;
+
+    function showNudgesIfNeeded() {
+      // EYE
+      if (eyeIcon && !eyeShown) {
+        composeWrap.appendChild(eyeIcon);
+        eyeShown = true;
+      }
+
+      // REC（RECまたはEYE_RECの場合）
+      if ((COND === 'REC' || COND === 'EYE_REC') && !recShown) {
+        recBadge.style.display = 'block';
+        recShown = true;
+      }
+    }
+
+    // textarea のイベントでナッジ発火
+    ta.addEventListener('focus', showNudgesIfNeeded);
+    ta.addEventListener('input', showNudgesIfNeeded);
+
+    // ============================
+    // 入力ログ
+    // ============================
     let prevLen = 0;
     ta.addEventListener('input', () => {
       const len = ta.value.length;
       charCount.textContent = `${len} 文字`;
       if (log.typeStart === null && len > 0) log.typeStart = Date.now();
-      const d = len - prevLen;
-      log.deltaChars += d;
+      const diff = len - prevLen;
+      log.deltaChars += diff;
       prevLen = len;
     });
+
     ta.addEventListener('keydown', (e) => {
       if (e.key === 'Backspace') log.backspaceCount++;
       if (e.key === 'Delete') log.delCount++;
       if (e.ctrlKey && e.key.toLowerCase() === 'v') log.pasteCount++;
     });
 
+    // ============================
     // 画面遷移
-    const go = (name) => {
-      for (const el of [screenCompose, screenConfirm, screenComplete]) el.classList.remove('active');
+    // ============================
+    function go(name) {
+      screenCompose.classList.remove('active');
+      screenConfirm.classList.remove('active');
+      screenComplete.classList.remove('active');
+
       if (name === 'compose') screenCompose.classList.add('active');
       if (name === 'confirm') screenConfirm.classList.add('active');
       if (name === 'complete') screenComplete.classList.add('active');
-    };
+    }
 
-    // 次へ（確認画面）
     nextBtn.addEventListener('click', () => {
       mirrorText.textContent = ta.value.trim();
       if (!mirrorText.textContent) { ta.focus(); return; }
 
-      // RECバッジ表示（RECまたはEYE_REC条件で表示）
-      const showREC = (COND === 'REC' || COND === 'EYE_REC');
-      recBadge.style.display = showREC ? 'block' : 'none';
-
-      go('confirm');
       log.previewOpen = Date.now();
 
       // クールダウン
       cooldownArea.style.display = 'inline-block';
       sendBtn.disabled = true;
-      setTimeout(() => { sendBtn.disabled = false; cooldownArea.style.display = 'none'; }, 1500);
+      setTimeout(() => {
+        sendBtn.disabled = false;
+        cooldownArea.style.display = 'none';
+      }, 1500);
+
+      go('confirm');
     });
 
-    // 戻る
     backBtn.addEventListener('click', () => {
-      go('compose');
       log.canceled = true;
+      go('compose');
       ta.focus();
     });
 
+    // ============================
     // 送信
+    // ============================
     sendBtn.addEventListener('click', async () => {
       log.submitAt = Date.now();
       log.lenAtSubmit = ta.value.length;
 
-      // GAS側TOKENと一致させる
       const payload = { ...log, text: ta.value, token: 'NUDGE_2025_SECRET' };
-
-      // 画面のデバッグ表示（任意）
       debugOut.textContent = JSON.stringify(payload, null, 2);
 
-      // ★ あなたのデプロイURL
-      const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby0Nfm5TVHFYAi6eTrd_e-1kH-UFa1nrOSfqqDfEVfvP5yC-uF2Nbh2BoRN3_VyJVUH/exec';
+      const WEBHOOK_URL =
+        'https://script.google.com/macros/s/AKfycby0Nfm5TVHFYAi6eTrd_e-1kH-UFa1nrOSfqqDfEVfvP5yC-uF2Nbh2BoRN3_VyJVUH/exec';
 
       try {
         await fetch(WEBHOOK_URL, {
           method: 'POST',
-          mode: 'no-cors',                         // CORS回避（応答は読まない）
-          headers: { 'Content-Type': 'text/plain' }, // preflight回避
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
       } catch (e) {
-        console.error('POST failed', e);
+        console.error(e);
       }
 
       go('complete');
     });
-
-
-    // トピック（実験用の簡易ダミー）
-    document.getElementById('topic').innerHTML = `
-      <strong>課題:</strong> 以下の記事に対して、あなたの意見をコメントしてください。<br/>
-      <em>例: 学内の施設利用ルールが変更され、一部の学生から不満の声が出ているというニュース。</em>
-    `;
   </script>
+
+
 </body>
 
 </html>
