@@ -140,11 +140,11 @@
     /* 👁️ 目アイコン（コメント欄 左上） */
     .eye-icon {
       position: absolute;
-      top: 4px;
+      top: -6px;
       /* フィールドの上部の「帯」に載せる */
       left: 10px;
       right: auto;
-      font-size: 18px;
+      font-size: 22px;
       opacity: 0.85;
       animation: blink 3s infinite;
       user-select: none;
@@ -170,8 +170,8 @@
     /* RECバッジ（コメント欄 左上：EYE の右横あたり） */
     .rec {
       position: absolute;
-      top: 6px;
-      left: 40px;
+      top: -6px;
+      left: 12px;
       /* 目の右に少しスペースを空けて表示 */
       right: auto;
       color: #E53935;
@@ -180,7 +180,7 @@
       z-index: 10;
       animation: recpulse 1s linear infinite;
       pointer-events: none;
-      font-size: 14px;
+      font-size: 22px;
       transform: scale(1.2);
     }
 
@@ -313,7 +313,7 @@
             <!-- 👁️ 目アイコンは条件によって挿入 -->
             <div class="rec" id="recBadge">● REC</div>
 
-            <textarea id="ta" placeholder="   ここにコメントを入力"></textarea>
+            <textarea id="ta" placeholder="ここにコメントを入力"></textarea>
           </div>
           <div class="toolbar">
             <div class="muted" id="charCount">0 文字</div>
