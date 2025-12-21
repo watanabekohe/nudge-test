@@ -439,7 +439,7 @@
 
   <script>
     // ====== 条件決定（ランダム） ======
- 
+
     let COND = sessionStorage.getItem('exp_cond');
     if (!COND) {
       const conds = ['CTRL', 'EYE', 'REC']; // ナッジなし / 目 / REC
@@ -601,7 +601,20 @@
     // ============================
     // 送信
     // ============================
-    sendBtn.addEventListener('click', async () => {
+    let isSending = false;
+    sendBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      // ===== 二重送信ガード =====
+      if (isSending) return;
+      isSending = true;
+
+      // UIを即ロック
+      sendBtn.disabled = true;
+      backBtn.disabled = true;
+      sendBtn.textContent = '送信中…';
+
+      // ===== ログ確定 =====
       log.submitAt = Date.now();
       log.lenAtSubmit = ta.value.length;
 
@@ -618,12 +631,22 @@
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
+
+        // 成功 → 完了画面へ
+        go('complete');
+
       } catch (e) {
         console.error(e);
-      }
 
-      go('complete');
+        // 失敗時のみ再送可にする
+        alert('送信に失敗しました。通信状況を確認してください。');
+        isSending = false;
+        sendBtn.disabled = false;
+        backBtn.disabled = false;
+        sendBtn.textContent = '送信';
+      }
     });
+
   </script>
 </body>
 
