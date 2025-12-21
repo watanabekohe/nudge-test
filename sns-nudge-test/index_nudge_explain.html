@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>実験説明書（模擬SNSナッジ実験）</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #fff;
+      --muted: #6b7280;
+      --primary: #111827;
+      --border: #e5e7eb;
+      --accent: #111827;
+      --link: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--primary);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      line-height: 1.65;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .04);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 18px 20px;
+      border-bottom: 1px solid #eef0f3;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    h2 {
+      font-size: 15px;
+      margin: 18px 0 6px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    ul {
+      margin: 8px 0 8px 1.2em;
+    }
+
+    .note {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--primary);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .divider {
+      height: 1px;
+      background: #eef0f3;
+      margin: 18px 0;
+    }
+
+    .actions {
+      padding: 16px 20px;
+      border-top: 1px solid #eef0f3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .agree-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    label {
+      font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+      margin-top: 3px;
+      transform: scale(1.15);
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button[disabled] {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    code {
+      background: #0b1220;
+      color: #cbd5e1;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <header>
+        <h1>実験説明書（模擬SNS画面を用いた研究）</h1>
+        <div class="sub">岩手県立大学の研究（卒業研究）に関するご案内です。<br>
+          本説明をお読みいただき、内容をご理解いただいたうえで、研究への参加に同意いただける場合のみ実験にご協力ください。</div>
+        <div class="pill">📌 所要時間目安：5〜10分</div>
+      </header>
+
+      <main>
+        <h2>1. 研究の目的</h2>
+        <p>
+           本研究は、SNSの投稿画面を模した環境において、投稿時の画面表示や状況の違いが、利用者のコメントの書き方や投稿時の行動にどのような影響を与えるかを明らかにすることを目的としています。
+        </p>
+
+        <h2>2. 実験方法</h2>
+        <p>以下の流れで実施します。</p>
+        <ul>
+          <li>模擬SNS画面で、提示された投稿文および先行コメントを読んでいただきます。</li>
+          <li>それらを読んだうえで、自身の意見や考えをコメントとして入力していただきます。</li>
+          <li>コメント入力中には、条件に応じて画面上の表示が変化する場合があります。<br>
+            これらの表示は、SNS上の投稿画面を再現するための演出であり、実験の進行や回答に影響する正解・不正解を示すものではありません。
+          </li>
+          <li>送信後、別ページ（Googleフォーム）で事後アンケートに回答していただきます。</li>
+        </ul>
+        <div class="note">
+          <p class="muted" style="margin:0;">
+            ※実験ページの最後に表示される参加者ID（例：<code>pabc12345</code>）を、事後アンケートで入力してもらいます。
+          </p>
+        </div>
+
+        <h2>3. 取得するデータ</h2>
+        <ul>
+          <li>入力されたコメント内容</li>
+          <li>コメント入力時の操作ログ（入力時間、キー操作回数など）</li>
+          <li>アンケートの回答内容</li>
+        </ul>
+
+        <h2>4. 個人情報とデータの取扱い</h2>
+        <p>
+          取得したデータは研究目的以外には使用しません。データは参加者IDで管理し、個人が特定されない形で匿名化します。<br>
+          学会発表・論文等で利用する場合も、個人が特定される情報は公開しません。
+        </p>
+        <p class="muted">
+          ※メールアドレス・氏名などの個人情報は収集しません。
+        </p>
+
+        <h2>5. 実験参加者の権利について</h2>
+        <p>
+          本研究への参加は自由意志によるものです。参加に同意した後であっても、途中で実験を中止することができ、そのことによる不利益はありません。
+          実験を途中で中止した場合、それまでに取得されたデータは研究には使用しません。
+          ただし、中止の申し出があった時点で、すでに匿名化して集計済みの結果がある場合は、そこから個別のデータだけを取り除けない可能性がありますので、あらかじめご了承ください。
+        </p>
+
+        <h2>6. 参加による利益・不利益</h2>
+        <p>
+          本研究に参加することによる費用負担はありません。
+          参加されない場合でも不利益を受けることは全くありません。在学生に対しては、成績評価とは関係ありません。
+        </p>
+
+        <h2>7. 問い合わせ先</h2>
+        <p class="muted">
+          研究に関する問い合わせは、依頼メールに記載の連絡先（研究者）へお願いします。
+        </p>
+
+        <div class="divider"></div>
+
+        <p class="muted">
+          以上を理解したうえで、同意できる場合のみ次へ進んでください。
+        </p>
+      </main>
+
+      <div class="actions">
+        <div class="agree-wrap">
+          <input id="agree" type="checkbox" />
+          <label for="agree">
+            上記の説明を読み、内容を理解しました。任意参加であること、データが匿名で研究目的に利用されることに同意します。
+            <div class="small">（チェックしないと実験へ進めません）</div>
+          </label>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="btn" class="primary" disabled>同意して実験へ進む</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ★ここだけ自分の実験ページURLに変更してね（同じGitHub Pages配下なら相対パスでOK）
+    const EXPERIMENT_URL = "./index_nudge_test.html";
+
+    const agree = document.getElementById("agree");
+    const btn = document.getElementById("btn");
+
+    agree.addEventListener("change", () => {
+      btn.disabled = !agree.checked;
+    });
+
+    btn.addEventListener("click", () => {
+      // 同意したことを保存（実験ページ側でチェックできる）
+      sessionStorage.setItem("exp_agreed", "yes");
+      sessionStorage.setItem("exp_agreed_at", String(Date.now()));
+      location.href = EXPERIMENT_URL;
+    });
+  </script>
+</body>
+
+</html>
