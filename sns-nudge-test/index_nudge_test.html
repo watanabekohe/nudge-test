@@ -303,6 +303,48 @@
       color: var(--muted);
       font-size: 12px;
     }
+
+    /* ===== 参加者ID コピーUI ===== */
+    .pid-box {
+      margin: 12px 0 6px;
+      padding: 14px 16px;
+      border: 2px dashed #3b82f6;
+      border-radius: 12px;
+      background: #eff6ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pid-text {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #1e3a8a;
+      user-select: all;
+      /* 長押し選択も可 */
+    }
+
+    .copy-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.97);
+    }
+
+    .copy-feedback {
+      font-size: 12px;
+      color: #15803d;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -423,8 +465,16 @@
             <h3>送信が完了しました。</h3>
             <p class="muted">ご協力ありがとうございました。続けて事後アンケートにお答えください（別フォーム）。</p>
             <p class="muted">
-              あなたの参加者ID：<code id="pidComplete"></code><br>
-              事後アンケートの最初の質問欄に、このIDをそのまま入力してください。
+              あなたの参加者ID（次のアンケートで入力します）
+            </p>
+
+            <div class="pid-box" id="pidBox">
+              <span id="pidComplete" class="pid-text"></span>
+              <button id="copyPidBtn" class="copy-btn">コピー</button>
+            </div>
+
+            <p class="copy-feedback" id="copyFeedback" style="display:none;">
+              ✔ 参加者IDをコピーしました
             </p>
             <p><a id="surveyLink" href="https://forms.gle/vJFaLeMnXb3LUREw8" target="_blank">事後アンケートを開く</a></p>
             <pre id="debugOut"
@@ -509,6 +559,25 @@
     condLabel.textContent = `条件: ${COND}`;
     pidFoot.textContent = `ID: ${pid}`;
     pidComplete.textContent = pid;
+    // ===== 参加者ID コピー =====
+    const copyPidBtn = document.getElementById('copyPidBtn');
+    const copyFeedback = document.getElementById('copyFeedback');
+
+    copyPidBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pid);
+        copyFeedback.style.display = 'block';
+        copyPidBtn.textContent = 'コピー済み';
+
+        setTimeout(() => {
+          copyFeedback.style.display = 'none';
+          copyPidBtn.textContent = 'コピー';
+        }, 2000);
+      } catch (e) {
+        alert('コピーできませんでした。参加者IDを手動で入力してください。');
+      }
+    });
+
 
     // ============================
     // 👁️ EYE & 🔴 REC 表示制御
